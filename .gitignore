@@ -27,5 +27,8 @@ node_modules
 # Users Environment Variables
 .lock-wscript
 
+# Gannt Files
 *.gan
+
+# Seriously... we have to use svn :'(
 .svn
