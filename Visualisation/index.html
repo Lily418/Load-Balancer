@@ -5,13 +5,19 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
-  var socket = io();
-  socket.on('cpu-usage', function(msg){
-        $('body').append("<p>"+ msg +"</p>");
-  });
+$(function(){
+    var socket = io();
+    socket.on('cpu-usage', function(msg){
+          $('body').append("<p>"+ msg +"</p>");
+    });
+}
+)
+
 </script>
   </head>
   <body>
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
+	</body>
   </body>
 </html>
