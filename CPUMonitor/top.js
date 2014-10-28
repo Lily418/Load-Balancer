@@ -1,6 +1,7 @@
 var exec = require('child_process').exec;
 
 module.exports = function getCpuUsage(callback){
+    console.log('getting cpu usage')
     var child = exec('top -b');
     child.stdout.on('data', function(data) {
         var matchCPUUsage = /Cpu\(s\):\s* [0-9]+\.[0-9]*/;
