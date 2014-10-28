@@ -11,10 +11,6 @@ function sendCPUUsage(usage){
 
 getCpuUsage(sendCPUUsage);
 
-app.get('/', function(req, res){
-  res.sendfile('index.html');
-});
-
 io.on('connection', function(socket){
   console.log('a user connected');
 });
