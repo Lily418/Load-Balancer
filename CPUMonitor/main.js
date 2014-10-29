@@ -1,21 +1,24 @@
 var app = require('express')();
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var io = require('socket.io-client');
 var getCpuUsage = require("./top.js");
 
 var run = true;
 
+console.log('connecting')
+var socket = io.connect('http://178.62.27.130:3000');
+
+socket.on('connect', function () {
+    console.log('connected')
+    getCpuUsage(sendCPUUsage);
+});
+
+socket.on('connect_failed', function(){
+    console.log('Connection Failed');
+});
+
+
 function sendCPUUsage(usage){
     console.log('emit' + usage)
-    io.emit('cpu-usage', usage);
+    socket.emit('cpu-usage', usage);
 };
-
-getCpuUsage(sendCPUUsage);
-
-io.on('connection', function(socket){
-  console.log('a user connected');
-});
-
-http.listen(3000, function(){
-  console.log('listening on *:3000');
-});
