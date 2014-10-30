@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Socket.IO chat</title>
-    <script src="http://178.62.27.130:3000/socket.io/socket.io.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="https://dl.dropboxusercontent.com/u/36831702/js/highcharts.js"></script>
     <script src="https://dl.dropboxusercontent.com/u/36831702/js/modules/exporting.js"></script>
@@ -10,9 +10,7 @@
     <script>
     $(function(){
 
-        var socket = io.connect("178.62.27.130:3000");
-
-        var series;
+        var socket = io.connect("http://178.62.27.130:3000");
         var chart;
         $('#container').highcharts({
             chart: {
@@ -20,7 +18,6 @@
                 marginRight: 10,
                 events: {
                     load: function () {
-                        series = this.series[0];
                         chart = this;
                     }
                 }
@@ -54,31 +51,41 @@
                     Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
                     Highcharts.numberFormat(this.y, 2);
                 }
-            },
-
-            series: [{
-                name: 'CPU Usage',
-                data: (function () {
-                    return [];
-                }())
-            }]
+            }
         })
 
 
-        socket.on('cpu-usage', function(msg){
-            console.log(msg)
-            if(series !== undefined){
-                series.addPoint([(new Date()).getTime(), parseFloat(msg)], true, false, true);
-                var min = new Date().setMinutes(new Date().getMinutes() - 3);
-                var max = new Date().setMinutes(new Date().getMinutes() + 1);
-                chart.xAxis[0].setExtremes(min, max);
+        socket.on('cpu-ip', function(msg){
+            msg = JSON.parse(msg);
 
-        } else {
-            console.log('highchart undefined')
-        }
-    });
+            if(chart === undefined){
+                console.log('chart undefined');
+                return;
+            }
 
-}
+            var series = chart.get(msg.ip);
+
+            if(series == null){
+                chart.addSeries({
+                    name: "Load for " + msg.ip,
+                    id: msg.ip,
+                    data: []
+                });
+
+                series = chart.get(msg.ip);
+            }
+
+            series.addPoint([(new Date()).getTime(), parseFloat(msg.usage)], true, false, true);
+
+
+            var min = new Date().setMinutes(new Date().getMinutes() - 3);
+            var max = new Date().setMinutes(new Date().getMinutes() + 1);
+            chart.xAxis[0].setExtremes(min, max);
+
+
+        });
+
+    }
 )
 
 </script>
