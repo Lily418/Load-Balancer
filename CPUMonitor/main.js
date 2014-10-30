@@ -14,7 +14,7 @@ app.get('/', function(req, res){
 });
 
 console.log('connecting')
-var socket = io.connect('http://178.62.27.130:3000');
+var socket = io.connect('http://192.168.56.101:3000');
 
 socket.on('connect', function () {
     console.log('connected')
