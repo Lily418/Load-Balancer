@@ -34,7 +34,7 @@ io.on('connection', function(socket){
     if(serverQueue.indexOf(ip) === -1){
         serverQueue.push(ip);
     }
-    
+
     //connectedServers[ip] = {time: new Date().getTime()};
     io.emit('cpu-ip', JSON.stringify({ip: ip,
                                 usage: msg}));
