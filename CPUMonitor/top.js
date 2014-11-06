@@ -3,7 +3,7 @@ var exec = require('child_process').exec;
 var count = 0;
 
 module.exports = function getCpuUsage(callback){
-    var child = exec('top -b -n 10');
+    var child = exec('sudo nice --20 top -b -n 10');
     child.stdout.on('data', function(data) {
         var matchCPUUsage = /Cpu\(s\):\s* [0-9]+\.[0-9]*/;
         var matchNumber = /[0-9]*\.[0-9]*/
