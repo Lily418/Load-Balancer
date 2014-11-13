@@ -1,0 +1,12 @@
+{
+  "name": "cpu-monitor",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {
+    "byline": "4.1.1",
+    "redis": "0.12.1",
+    "jquery": "2.1.1",
+    "jsdom": "1.2.0",
+    "request": "2.47.0"
+  }
+}
