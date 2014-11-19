@@ -50,7 +50,7 @@ io.on('connection', function(socket){
   });
 });
 
-setTimeout(function(){
+setInterval(function(){
     var count = cpuUsages.length;
     if(count == 0){
         return;
