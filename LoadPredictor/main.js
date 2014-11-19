@@ -26,6 +26,8 @@ app.get('/', function(req, res){
     });
 });
 
+
+var cpu-usages = []
 io.on('connection', function(socket){
   console.log(socket.request.connection._peername.address);
   var ip = socket.request.connection._peername.address;
@@ -35,11 +37,8 @@ io.on('connection', function(socket){
         serverQueue.push(ip);
     }
 
-    //connectedServers[ip] = {time: new Date().getTime()};
-    if(ip == "192.168.56.101"){
-    io.emit('cpu-ip', JSON.stringify({ip: ip,
-                                usage: msg}));
-    }
+    cpu-usages.push(msg);
+
   });
 
   socket.on('disconnect', function(){
@@ -50,3 +49,22 @@ io.on('connection', function(socket){
     }
   });
 });
+
+setTimeout(function(){
+    var count = cpu-usages.length;
+    if(count == 0){
+        return;
+    }
+
+    var sum = 0;
+    while(cpu-usages.length > 0){
+        sum += cpu-usages.pop();
+    }
+
+    var average = sum / count;
+
+    io.emit('cpu-ip', JSON.stringify({ip: "Average",
+                                    usage: average.toString()}));
+        }
+
+}, 1000);
