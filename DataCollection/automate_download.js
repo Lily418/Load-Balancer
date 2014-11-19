@@ -22,14 +22,20 @@ env(url, function(errors, window){
         }
     });
 
-    runProcess();
+    for(var i = 0; i < 20; i++){
+        runProcess();
+    }
 });
 
+
 function runProcess(){
+
     var p = processesToRun.pop();
     //console.log(p)
     if(typeof p != 'undefined'){
+        console.log(p)
         var child = exec(p);
+
         child.stdout.on('data', function(data){
             console.log(data);
         });

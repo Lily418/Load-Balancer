@@ -21,7 +21,7 @@ stream.on('data', function(line){
     if(/^en\s/.test(line)){
         var properties = line.split(" ");
         console.log(process.argv[3] + " " + properties[2])
-        client.set(process.argv[3], properties[2], redis.print);
+        client.set("wikiviews:" + process.argv[3], properties[2], redis.print);
         client.quit();
         stream.end();
     }
