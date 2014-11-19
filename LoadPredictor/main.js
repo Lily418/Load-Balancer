@@ -36,8 +36,10 @@ io.on('connection', function(socket){
     }
 
     //connectedServers[ip] = {time: new Date().getTime()};
+    if(ip == "192.168.56.101"){
     io.emit('cpu-ip', JSON.stringify({ip: ip,
                                 usage: msg}));
+    }
   });
 
   socket.on('disconnect', function(){
