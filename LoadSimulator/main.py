@@ -20,6 +20,8 @@ for key in redis.keys("wikiviews:*"):
     elif record_datetime.year == 2014:
         testing.append((record_datetime, views))
 
+print(str(len(training)) + " == " + str(len(testing)))
+
 if training_mode:
     simulation_profile = training
 else:
@@ -28,7 +30,6 @@ else:
 simulation_profile.sort(key=lambda time_views: time_views[0])
 max_views = max(training + testing, key=lambda time_views: time_views[1])[1]
 min_views = min(training + testing, key=lambda time_views: time_views[1])[1]
-
 
 
 class Requestor:
