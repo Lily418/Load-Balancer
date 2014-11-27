@@ -93,8 +93,11 @@ io.on('connection', function(socket){
 
 app.get('/', function(req, res){
     if(!recording){
+        recording = true;
         startRecordingUsage();
     }
+
+    console.log("Request Recieved")
 
     var server = nextServer();
     request("http://" + server + ":3005" , function(error, response, body) {
