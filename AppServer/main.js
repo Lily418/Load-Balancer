@@ -8,7 +8,7 @@ http.listen(3005, function(){
 //Arbitary calculation to simulate load when user makes a request
 function doCalculations(){
     var x = 0;
-    for(var i = 0; i < Math.pow(10, 8) * 5; i++){
+    for(var i = 0; i < Math.pow(10, 8); i++){
         x += Math.random();
     }
     return x;
