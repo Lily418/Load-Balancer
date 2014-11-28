@@ -7,7 +7,7 @@ var redis = require("redis");
 //Setup Redis
 client = redis.createClient();
 client.on("error", function (err) {
-    console.log("Error " + err);
+    //console.log("Error " + err);
 });
 
 
@@ -25,9 +25,6 @@ function nextServer(){
     serverQueue.push(ip);
     return ip;
 }
-
-
-
 
 var cpuUsages = []
 var time = 0;
@@ -51,7 +48,7 @@ function startRecordingUsage() {
 
         console.log(JSON.stringify({ip: "Average",
         usage: average.toString()}));
-        
+
         io.emit('cpu-ip', JSON.stringify({ip: "Average",
         usage: average.toString()}));
 
@@ -60,14 +57,6 @@ function startRecordingUsage() {
         var keyPrefix = training ? "training:" : "testing:";
 
         client.set(keyPrefix + time, average, redis.print);
-
-
-
-        var totalLoadSimulationTimeInSeconds = 22320
-        if(time >= totalLoadSimulationTimeInSeconds){
-            clearInterval(recordUsage);
-        }
-
 
     }, recordingInterval);
 }
