@@ -20,7 +20,6 @@ for key in redis.keys("wikiviews:*"):
     elif record_datetime.year == 2014:
         testing.append((record_datetime, views))
 
-print(str(len(training)) + " == " + str(len(testing)))
 
 if training_mode:
     simulation_profile = training
@@ -47,7 +46,12 @@ class Requestor:
     def request_loop(self):
         while True:
             if self.run:
+                beforeRequestTime = time.time()
                 self.make_request()
+                timeDelta = time.time() - beforeRequestTime
+                sleepTime = 0.5 - timeDelta
+                if sleepTime > 0:
+                    time.sleep(sleepTime)
             else:
                 time.sleep(0)
 
@@ -57,13 +61,12 @@ def scale(newMin, newMax, oldMin, oldMax, num):
 
 def make_requests():
     requestors = []
-    max_threads = 10
+    max_threads = 50
     for i in range(max_threads):
         requestor = Requestor()
         requestors.append(requestor)
         threading.Thread(target=requestor.request_loop).start()
 
-    print(len(simulation_profile))
     while len(simulation_profile) > 0:
         simulation_data = simulation_profile.pop(0)
         simulation_time = simulation_data[0]
@@ -81,12 +84,13 @@ def make_requests():
 
 
 
-make_requests()
+threading.Thread(target=make_requests).start()
+
 
 def time_request():
     t = timeit.Timer("Requestor().make_request()", "from __main__ import Requestor")
     print(t.timeit(1))
-    time.sleep(10)
+    time.sleep(5)
     time_request()
 
 
