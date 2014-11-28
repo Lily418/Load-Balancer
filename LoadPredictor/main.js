@@ -65,6 +65,5 @@ setTimeout(function(){
 
     io.emit('cpu-ip', JSON.stringify({ip: "Average",
                                     usage: average.toString()}));
-        }
 
 }, 1000);
