@@ -49,6 +49,9 @@ function startRecordingUsage() {
 
         var average = sum / count;
 
+        console.log(JSON.stringify({ip: "Average",
+        usage: average.toString()}));
+        
         io.emit('cpu-ip', JSON.stringify({ip: "Average",
         usage: average.toString()}));
 
@@ -78,8 +81,9 @@ io.on('connection', function(socket){
             serverQueue.push(ip);
         }
 
-        cpuUsages.push(msg);
-
+        if(recording){
+            cpuUsages.push(msg);
+        }
     });
 
     socket.on('disconnect', function(){
@@ -97,7 +101,7 @@ app.get('/', function(req, res){
         startRecordingUsage();
     }
 
-    console.log("Request Recieved")
+    client.incr("requests:" + recordingInterval);
 
     var server = nextServer();
     request("http://" + server + ":3005" , function(error, response, body) {
