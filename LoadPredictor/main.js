@@ -23,7 +23,7 @@ app.get('/', function(req, res){
     request("http://" + server + ":3005" , function(error, response, body) {
         res.write("You were served by " + server + "\n")
         res.end(body);
-    })
+    });
 });
 
 io.on('connection', function(socket){
