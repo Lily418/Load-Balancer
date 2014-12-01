@@ -96,6 +96,9 @@ app.get('/', function(req, res){
     request("http://" + server + ":3005" , function(error, response, body) {
         res.write("You were served by " + server + "\n")
         res.end(body);
+<<<<<<< HEAD
         client.incr("responses:" + server + ":" + recordingInterval);
+=======
+>>>>>>> 0ae1a2fe18b4abfb952b0b02e786639f90b98bac
     });
 });
