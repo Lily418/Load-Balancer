@@ -39,9 +39,11 @@ client.keys(keyPrefix + "*", function(err, keys){
     keys.forEach(function(key){
         client.del(key);
     });
+    console.log("Flushed Keys");
+});
 
-    console.log("Flushed Keys")
-}
+
+
 
 
 function startRecordingUsage() {
