@@ -7,7 +7,7 @@ var redis = require("redis");
 //Setup Redis
 client = redis.createClient();
 client.on("error", function (err) {
-    //console.log("Error " + err);
+    console.log("Error " + err);
 });
 
 
@@ -96,5 +96,6 @@ app.get('/', function(req, res){
     request("http://" + server + ":3005" , function(error, response, body) {
         res.write("You were served by " + server + "\n")
         res.end(body);
+        client.incr("responses:" + server + ":" + recordingInterval);
     });
 });
