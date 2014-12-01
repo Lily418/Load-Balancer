@@ -31,6 +31,7 @@ var time = 0;
 var recordingInterval = 1000 * 10;
 var training = true;
 var recording = false;
+var keyPrefix = training ? "training:" : "testing:";
 
 function startRecordingUsage() {
     var recordUsage = setInterval(function(){
@@ -53,8 +54,6 @@ function startRecordingUsage() {
         usage: average.toString()}));
 
         time += recordingInterval;
-
-        var keyPrefix = training ? "training:" : "testing:";
 
         client.set(keyPrefix + time, average, redis.print);
 
@@ -90,13 +89,13 @@ app.get('/', function(req, res){
         startRecordingUsage();
     }
 
-    client.incr("requests:" + recordingInterval);
+    client.incr(keyPrefix + "requests:" + recordingInterval);
 
     var server = nextServer();
     request("http://" + server + ":3005" , function(error, response, body) {
         res.write("You were served by " + server + "\n")
         res.end(body);
-        client.incr("responses:" + server + ":" + recordingInterval);
+        client.incr(keyPrefix + "responses:" + server + ":" + recordingInterval);
 
     });
 });
