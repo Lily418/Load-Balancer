@@ -12,6 +12,7 @@ client.on("error", function (err) {
 
 
 
+
 //var connectedServers = {}
 var serverQueue = []
 
@@ -32,6 +33,16 @@ var recordingInterval = 1000 * 10;
 var training = true;
 var recording = false;
 var keyPrefix = training ? "training:" : "testing:";
+
+//Clear data from previous runs
+client.keys(keyPrefix + "*", function(err, keys){
+    keys.forEach(function(key){
+        client.del(key);
+    });
+
+    console.log("Flushed Keys")
+}
+
 
 function startRecordingUsage() {
     var recordUsage = setInterval(function(){
