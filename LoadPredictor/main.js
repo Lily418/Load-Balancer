@@ -30,8 +30,10 @@ function nextServer(){
 var cpuUsages = []
 var time = 0;
 var recordingInterval = 1000 * 10;
+var endtime = 7440000;
 var training = true;
 var recording = false;
+var ended = false;
 var keyPrefix = training ? "training:" : "testing:";
 
 //Clear data from previous runs
@@ -48,27 +50,33 @@ client.keys(keyPrefix + "*", function(err, keys){
 
 function startRecordingUsage() {
     var recordUsage = setInterval(function(){
-        var count = cpuUsages.length;
-        if(count == 0){
-            return;
+        if(!ended){
+            var count = cpuUsages.length;
+            if(count == 0){
+                return;
+            }
+
+            var sum = 0;
+            while(cpuUsages.length > 0){
+                sum += cpuUsages.pop();
+            }
+
+            var average = sum / count;
+
+            console.log(JSON.stringify({ip: "Average",
+            usage: average.toString()}));
+
+            io.emit('cpu-ip', JSON.stringify({ip: "Average",
+            usage: average.toString()}));
+
+            time += recordingInterval;
+
+            client.set(keyPrefix + time, average, redis.print);
+            if(time > endtime){
+                ended = true;
+            }
+
         }
-
-        var sum = 0;
-        while(cpuUsages.length > 0){
-            sum += cpuUsages.pop();
-        }
-
-        var average = sum / count;
-
-        console.log(JSON.stringify({ip: "Average",
-        usage: average.toString()}));
-
-        io.emit('cpu-ip', JSON.stringify({ip: "Average",
-        usage: average.toString()}));
-
-        time += recordingInterval;
-
-        client.set(keyPrefix + time, average, redis.print);
 
     }, recordingInterval);
 }
