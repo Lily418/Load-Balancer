@@ -110,13 +110,13 @@ app.get('/', function(req, res){
         startRecordingUsage();
     }
 
-    client.incr(keyPrefix + "requests:" + recordingInterval);
+    client.incr(keyPrefix + "requests:" + time);
 
     var server = nextServer();
     request("http://" + server + ":3005" , function(error, response, body) {
         res.write("You were served by " + server + "\n")
         res.end(body);
-        client.incr(keyPrefix + "responses:" + server + ":" + recordingInterval);
+        client.incr(keyPrefix + "responses:" + server + ":" + time);
 
     });
 });

@@ -41,7 +41,7 @@ class Requestor:
         Requestor.count += 1
 
     def make_request(self):
-        urllib.request.urlopen('http://192.168.56.101:3000').read()
+        urllib.request.urlopen('http://192.168.56.113:3000').read()
 
     def request_loop(self):
         while True:
@@ -61,7 +61,7 @@ def scale(newMin, newMax, oldMin, oldMax, num):
 
 def make_requests():
     requestors = []
-    max_threads = 50
+    max_threads = 20
     for i in range(max_threads):
         requestor = Requestor()
         requestors.append(requestor)
@@ -71,7 +71,7 @@ def make_requests():
         simulation_data = simulation_profile.pop(0)
         simulation_time = simulation_data[0]
         page_views = simulation_data[1]
-        threads = int(scale(1, 10, min_views, max_views, page_views))
+        threads = int(scale(1, max_threads, min_views, max_views, page_views))
         print("It's " + str(simulation_time) + " Running " + str(threads) + " threads")
 
         for i in range(len(requestors)):
@@ -81,6 +81,8 @@ def make_requests():
                 requestors[i].run = False
 
         time.sleep(30)
+
+    print("SIM END")
 
 
 
