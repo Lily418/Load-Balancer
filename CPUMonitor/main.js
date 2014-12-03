@@ -2,7 +2,7 @@ var io = require('socket.io-client');
 var getCpuUsage = require("./top.js");
 
 console.log('connecting')
-var socket = io.connect('http://192.168.56.113:3000');
+var socket = io.connect('http://192.168.56.114:3000');
 
 socket.on('connect', function () {
     console.log('connected')

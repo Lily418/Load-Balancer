@@ -41,7 +41,7 @@ class Requestor:
         Requestor.count += 1
 
     def make_request(self):
-        urllib.request.urlopen('http://192.168.56.113:3000').read()
+        urllib.request.urlopen('http://192.168.56.114:3000').read()
 
     def request_loop(self):
         while True:
