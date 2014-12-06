@@ -3,6 +3,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var request = require("request");
 var redis = require("redis");
+var scale = require("./scale.js");
 
 //Setup Redis
 client = redis.createClient();
@@ -70,6 +71,7 @@ function startRecordingUsage() {
             usage: average.toString()}));
 
             time += recordingInterval;
+            scale(client, time);
 
             client.set(keyPrefix + time, average, redis.print);
             if(time > endtime){
@@ -103,6 +105,7 @@ io.on('connection', function(socket){
         }
     });
 });
+
 
 app.get('/', function(req, res){
     if(!recording){
