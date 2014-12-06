@@ -10,8 +10,8 @@ socket.on('cpu-ip', function(msg){
 var requestsHandledPerInterval = 20
 
 module.exports = function(redisClient, timeInterval){
-    redisClient.get("training:requests:" + timeInterval, function(err, value)){
+    redisClient.get("training:requests:" + timeInterval, function(err, value){
         var optimalServers = value / requestsHandledPerInterval;
         console.log('Scaling To ' + optimalServers);
-    }
+    });
 }
