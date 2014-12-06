@@ -71,7 +71,7 @@ function startRecordingUsage() {
             usage: average.toString()}));
 
             time += recordingInterval;
-            scale(client, time);
+            scale(client, time, io);
 
             client.set(keyPrefix + time, average, redis.print);
             if(time > endtime){

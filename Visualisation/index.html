@@ -11,68 +11,74 @@
     $(function(){
 
         var socket = io.connect("http://192.168.56.114:3000");
-        var chart;
-        $('#container').highcharts({
-            chart: {
-                type: 'spline',
-                marginRight: 10,
-                events: {
-                    load: function () {
-                        chart = this;
+        createChart('#container', 'CPU_Usage', 'datetime');
+        createChart('#container2', 'Optimal_Servers', 'linear');
+
+        function createChart(id, title, xAxisType){
+            $(id).highcharts({
+                chart: {
+                    type: 'spline',
+                    marginRight: 10,
+                    events: {
+                        load: function () {
+                            window[title] = this;
+                        }
+                    }
+                },
+                title: {
+                    text: title
+                },
+
+                yAxis: {
+                    title: {
+                        text: 'Usage %'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }],
+                    min: 0,
+                    max: 100,
+                },
+                xAxis: {
+                    title: {
+                        text: 'Time'
+                    },
+                    type: xAxisType,
+                    tickPixelInterval: 100,
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.series.name + '</b><br/>' +
+                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                        Highcharts.numberFormat(this.y, 2);
                     }
                 }
-            },
-            title: {
-                text: 'CPU Usage'
-            },
+            });
+        }
 
-            yAxis: {
-                title: {
-                    text: 'Usage %'
-                },
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#808080'
-                }],
-                min: 0,
-                max: 100,
-            },
-            xAxis: {
-                title: {
-                    text: 'Time'
-                },
-                type: 'datetime',
-                tickPixelInterval: 100,
-            },
-            tooltip: {
-                formatter: function () {
-                    return '<b>' + this.series.name + '</b><br/>' +
-                    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                    Highcharts.numberFormat(this.y, 2);
-                }
-            }
-        })
+
 
 
         socket.on('cpu-ip', function(msg){
             msg = JSON.parse(msg);
 
-            if(chart === undefined){
+            if(CPU_Usage === undefined){
                 console.log('chart undefined');
                 return;
             }
 
-            var series = chart.get(msg.ip);
+            var series = CPU_Usage.get(msg.ip);
 
-            if(series == null){
-                chart.addSeries({
+            if(series == null) {
+                CPU_Usage.addSeries({
                     name: "Load for " + msg.ip,
                     id: msg.ip,
                     data: []
                 });
 
-                series = chart.get(msg.ip);
+                series = CPU_Usage.get(msg.ip);
             }
 
             series.addPoint([(new Date()).getTime(), parseFloat(msg.usage)], true, false, true);
@@ -80,11 +86,32 @@
 
             var min = new Date().setMinutes(new Date().getMinutes() - 3);
             var max = new Date().setMinutes(new Date().getMinutes() + 1);
-            chart.xAxis[0].setExtremes(min, max);
+            CPU_Usage.xAxis[0].setExtremes(min, max);
 
 
         });
 
+        socket.on('optimal-servers', function(msg){
+            msg = JSON.parse(msg);
+            if(Optimal_Servers === undefined){
+                return;
+            }
+
+            var series = Optimal_Servers.get('OSP');
+
+            if(series == null) {
+                Optimal_Servers.addSeries({
+                    name: "Optimal Server Prediction",
+                    id: "OSP",
+                    data: []
+                });
+
+                series = Optimal_Servers.get('OSP');
+            }
+
+            series.addPoint(msg.timeInterval, msg.optimalServers);
+            Optimal_Servers.xAxis[0].setExtremes(0, 30000);
+        });
     }
 )
 
@@ -92,6 +119,7 @@
 </head>
 <body>
     <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    <div id="container2" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
 </body>
 </body>
