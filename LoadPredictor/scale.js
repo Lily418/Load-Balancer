@@ -12,11 +12,11 @@ var list = []
 
 function calculateOptimalServers(redisClient, timeInterval, seriesTag, callback){
     redisClient.get(seriesTag + ":requests:" + timeInterval, function(err, value){
-        list.push(value);
+        list.push(Number(value));
         if(list.length == 100){
             console.log(list);
         }
-        
+
         var optimalServers = Math.ceil(value / requestsHandledPerInterval);
         callback(timeInterval, optimalServers);
     });
