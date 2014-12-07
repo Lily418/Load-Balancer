@@ -7,7 +7,7 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 #from ws4py.websocket import WebSocket
 
-training_mode = False
+training_mode = True
 redis = redis.StrictRedis()
 training = []
 testing  = []
@@ -23,12 +23,19 @@ for key in redis.keys("wikiviews:*"):
         testing.append((record_datetime, views))
 
 
+training.sort(key=lambda time_views: time_views[0])
+testing.sort(key=lambda time_views: time_views[0])
+
+training = training[0:34]
+testing  = testing[0:34]
+
 if training_mode:
     simulation_profile = training
 else:
     simulation_profile = testing
 
-simulation_profile.sort(key=lambda time_views: time_views[0])
+
+
 max_views = max(training + testing, key=lambda time_views: time_views[1])[1]
 min_views = min(training + testing, key=lambda time_views: time_views[1])[1]
 
