@@ -47,6 +47,7 @@ client.keys(keyPrefix + "*", function(err, keys){
 
 
 var requests = 0;
+var serverResponses = {};
 
 function startRecordingUsage() {
     scale(client, time, io);
@@ -75,7 +76,16 @@ function startRecordingUsage() {
 
             client.set(keyPrefix + time, average, redis.print);
             client.set(keyPrefix + "requests:" + time, requests);
+
+            for (var server in serverResponses) {
+                if (serverResponses.hasOwnProperty(server)) {
+                    client.set(keyPrefix + "responses:" + server + ":" + time, serverResponses[server])
+                }
+            }
+
             requests = 0;
+            serverResponses = {};
+            
             if(time > endtime){
                 ended = true;
             }
@@ -120,7 +130,12 @@ app.get('/', function(req, res){
     request("http://" + server + ":3005" , function(error, response, body) {
         res.write("You were served by " + server + "\n")
         res.end(body);
-        client.incr(keyPrefix + "responses:" + server + ":" + time);
 
+        if(serverResponses[server] === undefined){
+            serverResponses[server] = 1;
+        }
+        else {
+            serverResponses[server]++;
+        }
     });
 });
