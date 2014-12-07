@@ -9,7 +9,7 @@ socket.on('cpu-ip', function(msg){
 
 var requestsHandledPerInterval = 20
 
-function calculateOptimalServers(timeInterval, seriesTag, callback){
+function calculateOptimalServers(redisClient, timeInterval, seriesTag, callback){
     redisClient.get(seriesTag + ":requests:" + timeInterval, function(err, value){
         var optimalServers = Math.ceil(value / requestsHandledPerInterval);
         callback(timeInterval, optimalServers);
@@ -23,7 +23,7 @@ function createEmitOptimal(io){
 }
 
 module.exports = function(redisClient, timeInterval, io){
-    calculateOptimalServers(timeInterval, "training", createEmitOptimal(io));
+    calculateOptimalServers(redisClient, timeInterval, "training", createEmitOptimal(io));
 
     /*var prevInterval = timeInterval - (10 * 1000);
     //Calculate true optimal for previous timeframe
