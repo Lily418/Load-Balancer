@@ -7,7 +7,7 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 #from ws4py.websocket import WebSocket
 
-training_mode = True
+training_mode = False
 redis = redis.StrictRedis()
 training = []
 testing  = []
