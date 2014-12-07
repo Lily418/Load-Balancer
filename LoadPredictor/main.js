@@ -50,6 +50,7 @@ client.keys(keyPrefix + "*", function(err, keys){
 
 
 function startRecordingUsage() {
+    scale(client, time, io);
     var recordUsage = setInterval(function(){
         if(!ended){
             var count = cpuUsages.length;
@@ -71,7 +72,7 @@ function startRecordingUsage() {
             usage: average.toString()}));
 
             time += recordingInterval;
-            scale(client, time, io);
+
 
             client.set(keyPrefix + time, average, redis.print);
             if(time > endtime){
