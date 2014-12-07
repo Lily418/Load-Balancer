@@ -24,7 +24,7 @@ function createEmitOptimal(io){
 
 module.exports = function(redisClient, timeInterval, io){
     for(var i = 0; i < 1000000; i += 10000){
-        calculateOptimalServers(redisClient, timeInterval, "training", createEmitOptimal(io));
+        calculateOptimalServers(redisClient, i, "training", createEmitOptimal(io));
     }
 
     /*var prevInterval = timeInterval - (10 * 1000);
