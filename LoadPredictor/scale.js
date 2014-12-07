@@ -8,13 +8,20 @@ console.log(msg)
 });*/
 
 var requestsHandledPerInterval = 20
+var list = []
 
 function calculateOptimalServers(redisClient, timeInterval, seriesTag, callback){
     redisClient.get(seriesTag + ":requests:" + timeInterval, function(err, value){
+        list.push(value);
+        if(list.length == 100){
+            console.log(list);
+        }
+        
         var optimalServers = Math.ceil(value / requestsHandledPerInterval);
         callback(timeInterval, optimalServers);
     });
 }
+
 
 function createEmitOptimal(io){
     return function(timeInterval, optimalServers){
@@ -23,7 +30,7 @@ function createEmitOptimal(io){
 }
 
 module.exports = function(redisClient, timeInterval, io){
-    for(var i = 0; i < 1000000; i += 10000){
+    for(var i = 0; i <= 1000000; i += 10000){
         calculateOptimalServers(redisClient, i, "training", createEmitOptimal(io));
     }
 
