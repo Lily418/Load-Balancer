@@ -4,6 +4,8 @@ import timeit
 import time
 import redis
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
+#from ws4py.websocket import WebSocket
 
 training_mode = True
 redis = redis.StrictRedis()
@@ -31,70 +33,39 @@ max_views = max(training + testing, key=lambda time_views: time_views[1])[1]
 min_views = min(training + testing, key=lambda time_views: time_views[1])[1]
 
 
-class Requestor:
+def make_request():
+    urllib.request.urlopen('http://192.168.56.114:3000').read()
 
-    count = 0;
+def time_requests():
+    while True:
+        t = timeit.Timer("make_request()", "from __main__ import make_request")
+        print(t.timeit(1))
+        time.sleep(5)
 
-    def __init__(self):
-        self.run = False
-        self.count = Requestor.count
-        Requestor.count += 1
 
-    def make_request(self):
-        urllib.request.urlopen('http://192.168.56.114:3000').read()
+threading.Thread(target=time_requests).start()
 
-    def request_loop(self):
-        while True:
-            if self.run:
-                beforeRequestTime = time.time()
-                self.make_request()
-                timeDelta = time.time() - beforeRequestTime
-                sleepTime = 0.5 - timeDelta
-                if sleepTime > 0:
-                    time.sleep(sleepTime)
-            else:
-                time.sleep(0)
+with ThreadPoolExecutor(max_workers=30) as executor:
+    def request_interval(target_requests):
+        for i in range(0, target_requests):
+            time.sleep(30 / target_requests)
+            executor.submit(make_request)
 
-def scale(newMin, newMax, oldMin, oldMax, num):
-    newRange = newMax - newMin
-    return newMin + (newRange * ((num - oldMin) / (oldMax - oldMin)))
+    def scale(newMin, newMax, oldMin, oldMax, num):
+        newRange = newMax - newMin
+        return newMin + (newRange * ((num - oldMin) / (oldMax - oldMin)))
 
-def make_requests():
-    requestors = []
-    max_threads = 20
-    for i in range(max_threads):
-        requestor = Requestor()
-        requestors.append(requestor)
-        threading.Thread(target=requestor.request_loop).start()
+    def make_requests():
+        while len(simulation_profile) > 0:
+            simulation_data = simulation_profile.pop(0)
+            simulation_time = simulation_data[0]
+            page_views = simulation_data[1]
+            views = int(scale(0, 140, min_views, max_views, page_views))
+            print("It's " + str(simulation_time) + " Making " + str(views) + " requests")
+            request_interval(views)
 
-    while len(simulation_profile) > 0:
-        simulation_data = simulation_profile.pop(0)
-        simulation_time = simulation_data[0]
-        page_views = simulation_data[1]
-        threads = int(scale(1, max_threads, min_views, max_views, page_views))
-        print("It's " + str(simulation_time) + " Running " + str(threads) + " threads")
-
-        for i in range(len(requestors)):
-            if i < threads:
-                requestors[i].run = True
-            else:
-                requestors[i].run = False
-
-        time.sleep(30)
-
-    print("SIM END")
+        print("SIM END")
 
 
 
-threading.Thread(target=make_requests).start()
-
-
-def time_request():
-    t = timeit.Timer("Requestor().make_request()", "from __main__ import Requestor")
-    print(t.timeit(1))
-    time.sleep(5)
-    time_request()
-
-
-
-threading.Thread(target=time_request).start()
+    make_requests()
