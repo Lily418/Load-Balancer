@@ -11,10 +11,10 @@
     $(function(){
 
         var socket = io.connect("http://192.168.56.114:3000");
-        createChart('#container', 'CPU_Usage', 'datetime');
-        createChart('#container2', 'Optimal_Servers', 'linear');
+        createChart('#container', 'CPU_Usage', 'datetime', 100);
+        createChart('#container2', 'Optimal_Servers', 'linear', 10);
 
-        function createChart(id, title, xAxisType){
+        function createChart(id, title, xAxisType, max){
             $(id).highcharts({
                 chart: {
                     type: 'spline',
@@ -39,7 +39,8 @@
                         color: '#808080'
                     }],
                     min: 0,
-                    max: 100,
+                    max: max,
+                    allowDecimals: false
                 },
                 xAxis: {
                     title: {
@@ -47,6 +48,7 @@
                     },
                     type: xAxisType,
                     tickPixelInterval: 100,
+                    allowDecimals: false
                 },
                 tooltip: {
                     formatter: function () {
@@ -97,20 +99,22 @@
                 return;
             }
 
-            var series = Optimal_Servers.get('OSP');
+            var series = Optimal_Servers.get(msg.series);
 
             if(series == null) {
                 Optimal_Servers.addSeries({
-                    name: "Optimal Server Prediction",
-                    id: "OSP",
+                    name: msg.series,
+                    id: msg.series,
                     data: []
                 });
 
-                series = Optimal_Servers.get('OSP');
+                series = Optimal_Servers.get(msg.series);
             }
 
-            series.addPoint(msg.timeInterval, msg.optimalServers);
-            Optimal_Servers.xAxis[0].setExtremes(0, 30000);
+            console.log(msg);
+
+            series.addPoint(msg.optimalServers);
+            Optimal_Servers.xAxis[0].setExtremes(0, 100);
         });
     }
 )

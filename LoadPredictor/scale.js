@@ -7,7 +7,7 @@ socket.on('cpu-ip', function(msg){
 console.log(msg)
 });*/
 
-var requestsHandledPerInterval = 20
+var requestsHandledPerInterval = 10
 var list = []
 
 function calculateOptimalServers(redisClient, timeInterval, seriesTag, callback){
@@ -27,16 +27,22 @@ function calculateOptimalServers(redisClient, timeInterval, seriesTag, callback)
 }
 
 
-function createEmitOptimal(io){
+function createEmitOptimal(io, series){
     return function(timeInterval, optimalServers){
-        io.emit('optimal-servers', JSON.stringify({"timeInterval": timeInterval, "optimalServers": optimalServers}));
+        io.emit('optimal-servers', JSON.stringify({"series": series, "timeInterval": timeInterval, "optimalServers": optimalServers}));
     }
 }
 
-module.exports = function(redisClient, timeInterval, io){
+module.exports = {
+    emitTrainingData: function(redisClient, io){
     for(var i = 0; i <= 1000000; i += 10000){
-        calculateOptimalServers(redisClient, i, "training", createEmitOptimal(io));
+        calculateOptimalServers(redisClient, i, "training", createEmitOptimal(io, "Training_Data"));
+    },
+
+    emitTestData: function(redisClient, timeInterval, io){
+        calculateOptimalServers(redisClient, timeInterval, "testing", createEmitOptimal(io, "Test_Recording"));
     }
+}
 
     /*var prevInterval = timeInterval - (10 * 1000);
     //Calculate true optimal for previous timeframe

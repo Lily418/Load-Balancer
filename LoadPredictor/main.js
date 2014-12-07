@@ -50,7 +50,7 @@ var requests = 0;
 var serverResponses = {};
 
 function startRecordingUsage() {
-    scale(client, time, io);
+    scale.emitTrainingData(client, io);
     var recordUsage = setInterval(function(){
         if(!ended){
             var count = cpuUsages.length;
@@ -82,6 +82,8 @@ function startRecordingUsage() {
                     client.set(keyPrefix + "responses:" + server + ":" + time, serverResponses[server])
                 }
             }
+
+            scale.emitTestData(client, time, io);
 
             requests = 0;
             serverResponses = {};
