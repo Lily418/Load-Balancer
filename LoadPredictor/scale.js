@@ -35,8 +35,9 @@ function createEmitOptimal(io, series){
 
 module.exports = {
     emitTrainingData: function(redisClient, io){
-    for(var i = 0; i <= 1000000; i += 10000){
-        calculateOptimalServers(redisClient, i, "training", createEmitOptimal(io, "Training_Data"));
+        for(var i = 0; i <= 1000000; i += 10000){
+            calculateOptimalServers(redisClient, i, "training", createEmitOptimal(io, "Training_Data"));
+        }
     },
 
     emitTestData: function(redisClient, timeInterval, io){
@@ -44,10 +45,9 @@ module.exports = {
     }
 }
 
-    /*var prevInterval = timeInterval - (10 * 1000);
-    //Calculate true optimal for previous timeframe
-    redisClient.get("testing:requests:" + prevInterval, function(err,value){
-    var optimalServers = Math.ceil(value / requestsHandledPerInterval);
-    io.emit('optimal-servers', JSON.stringify({"timeInterval": timeInterval, "optimalServers": optimalServers}))
+/*var prevInterval = timeInterval - (10 * 1000);
+//Calculate true optimal for previous timeframe
+redisClient.get("testing:requests:" + prevInterval, function(err,value){
+var optimalServers = Math.ceil(value / requestsHandledPerInterval);
+io.emit('optimal-servers', JSON.stringify({"timeInterval": timeInterval, "optimalServers": optimalServers}))
 });*/
-}
