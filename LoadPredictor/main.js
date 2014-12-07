@@ -46,8 +46,7 @@ client.keys(keyPrefix + "*", function(err, keys){
 });
 
 
-
-
+var requests = 0;
 
 function startRecordingUsage() {
     scale(client, time, io);
@@ -75,6 +74,8 @@ function startRecordingUsage() {
 
 
             client.set(keyPrefix + time, average, redis.print);
+            client.set(keyPrefix + "requests:" + time, requests);
+            requests = 0;
             if(time > endtime){
                 ended = true;
             }
@@ -107,14 +108,13 @@ io.on('connection', function(socket){
     });
 });
 
-
 app.get('/', function(req, res){
     if(!recording){
         recording = true;
         startRecordingUsage();
     }
 
-    client.incr(keyPrefix + "requests:" + time);
+    requests++;
 
     var server = nextServer();
     request("http://" + server + ":3005" , function(error, response, body) {
