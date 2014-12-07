@@ -45,7 +45,7 @@ def time_requests():
 
 threading.Thread(target=time_requests).start()
 
-with ThreadPoolExecutor(max_workers=30) as executor:
+with ThreadPoolExecutor(max_workers=50) as executor:
     def request_interval(target_requests):
         for i in range(0, target_requests):
             time.sleep(30 / target_requests)
@@ -60,7 +60,7 @@ with ThreadPoolExecutor(max_workers=30) as executor:
             simulation_data = simulation_profile.pop(0)
             simulation_time = simulation_data[0]
             page_views = simulation_data[1]
-            views = int(scale(0, 140, min_views, max_views, page_views))
+            views = int(scale(0, 160, min_views, max_views, page_views))
             print("It's " + str(simulation_time) + " Making " + str(views) + " requests")
             request_interval(views)
 
