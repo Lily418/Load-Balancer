@@ -33,6 +33,12 @@ function createEmitOptimal(io, series){
     }
 }
 
+function predictOptimal(redisClient, timeInterval, callback){
+    calculateOptimalServers(redisClient, timeInterval, "training", function(timeInterval, optimalServers){
+        callback(optimalServers);
+    });
+}
+
 module.exports = {
     emitTrainingData: function(redisClient, io){
         for(var i = 10000; i <= 1000000; i += 10000){
@@ -42,6 +48,12 @@ module.exports = {
 
     emitTestData: function(redisClient, timeInterval, io){
         calculateOptimalServers(redisClient, timeInterval, "testing", createEmitOptimal(io, "Test_Recording"));
+    },
+
+    scale: function(redisClient, timeInterval, io){
+        predictOptimal(redisClient, timeInterval, function(prediction){
+            io.emit('scale-request', prediction);
+        });
     }
 }
 
