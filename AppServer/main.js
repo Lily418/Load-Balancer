@@ -3,7 +3,7 @@ var http = require('http').Server(app);
 var io = require('socket.io-client')('http://192.168.56.104:3000');
 var getCpuUsage = require("./top.js");
 
-var socket = io.connect('http://192.168.56.104:3000');
+var socket = io.connect();
 
 socket.on('connect', function () {
     console.log('connected')
@@ -37,7 +37,7 @@ app.get('/', function(req, res){
     res.end("Here is a website " + doCalculations());
 });
 
-process.on( 'SIGINT', function() {
+process.on( 'SIGTERM', function() {
     socket.emit('shutdown', "");
     socket.on('shutdown-complete', function(){
         console.log('Shutting down now')
