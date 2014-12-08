@@ -18,3 +18,11 @@ function sendCPUUsage(usage){
     console.log('emit' + usage)
     socket.emit('cpu-usage', usage);
 };
+
+process.on( 'SIGINT', function() {
+    socket.emit('shutdown', "");
+    socket.on('shutdown-complete', function(){
+        socket.disconnect();
+        process.exit();
+    });
+});

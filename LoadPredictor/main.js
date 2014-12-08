@@ -98,6 +98,13 @@ function startRecordingUsage() {
     }, recordingInterval);
 }
 
+function removeFromServerList(ip){
+    var index = serverQueue.indexOf(ip);
+    if(index > -1){
+        serverQueue.splice(index, 1);
+    }
+}
+
 io.on('connection', function(socket){
     console.log(socket.request.connection._peername.address);
     var ip = socket.request.connection._peername.address;
@@ -112,12 +119,16 @@ io.on('connection', function(socket){
         }
     });
 
+
+
+    socket.on('shutdown', function(){
+        removeFromServerList(ip);
+        socket.emit('shutdown-complete', "");
+    });
+
     socket.on('disconnect', function(){
-        console.log('user disconnected');
-        var index = serverQueue.indexOf(ip);
-        if(index > -1){
-            serverQueue.splice(index, 1);
-        }
+        //Call again incase of unexpected shutdown
+        removeFromServerList(ip);
     });
 });
 
