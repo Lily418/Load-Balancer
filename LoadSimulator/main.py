@@ -5,9 +5,13 @@ import time
 import redis
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
-#from ws4py.websocket import WebSocket
+import cherrypy
+from ws4py.server.cherrypyserver import WebSocketPlugin, WebSocketTool
+from ws4py.websocket import WebSocket
+from ws4py.messaging import TextMessage
 
-training_mode = False
+
+training_mode = True
 redis = redis.StrictRedis()
 training = []
 testing  = []
@@ -43,14 +47,45 @@ min_views = min(training + testing, key=lambda time_views: time_views[1])[1]
 def make_request():
     urllib.request.urlopen('http://192.168.56.114:3000').read()
 
-def time_requests():
-    while True:
+
+def time_requests(web_socket):
+    while not web_socket.client_terminated:
         t = timeit.Timer("make_request()", "from __main__ import make_request")
-        print(t.timeit(1))
+        responseTime = t.timeit(1)
+        print(str(responseTime))
+        web_socket.send(str(responseTime).encode('utf-8'))
         time.sleep(5)
 
+class EmptyClient(WebSocket):
+    def opened(self):
+        threading.Thread(target=time_requests, args=(self,)).start()
+        #cherrypy.engine.publish('response-time', TextMessage("PORK N BEANS"))
+        #self.send("PORK N BEANS")
+        pass
 
-threading.Thread(target=time_requests).start()
+
+
+cherrypy.config.update({'server.socket_port': 9000})
+WebSocketPlugin(cherrypy.engine).subscribe()
+cherrypy.tools.websocket = WebSocketTool()
+
+
+
+class Root(object):
+    @cherrypy.expose
+    def ws(self):
+        # you can access the class instance through
+        handler = cherrypy.request.ws_handler
+
+def startCherryPyServer():
+    cherrypy.quickstart(Root(), '/', config={'/ws': {'tools.websocket.on': True,
+                                                     'tools.websocket.handler_cls': EmptyClient}})
+
+threading.Thread(target=startCherryPyServer).start()
+
+
+
+
 
 with ThreadPoolExecutor(max_workers=50) as executor:
     def request_interval(target_requests):

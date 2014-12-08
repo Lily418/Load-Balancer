@@ -11,8 +11,35 @@
     $(function(){
 
         var socket = io.connect("http://192.168.56.114:3000");
+
+
+
+
         createChart('#container', 'CPU_Usage', 'datetime', 100);
         createChart('#container2', 'Optimal_Servers', 'linear', 10);
+        createChart('#responseTime', 'Response_Time', 'datetime', 5);
+
+        var exampleSocket = new WebSocket("ws://127.0.0.1:9000/ws");
+        exampleSocket.onopen = function (event) {
+            exampleSocket.send("Here's some text that the server is urgently awaiting!");
+        }
+
+        exampleSocket.onmessage = function (event) {
+            if(Response_Time === undefined){
+                return;
+            }
+
+            if(Response_Time.get("ResponseTime") == null) {
+                Response_Time.addSeries({
+                    name: "Response Time",
+                    id: "ResponseTime",
+                    data: []
+                });
+            }
+
+
+            Response_Time.get("ResponseTime").addPoint([new Date().getTime(), Number(event.data)], true, false, true);
+        }
 
         function createChart(id, title, xAxisType, max){
             $(id).highcharts({
@@ -122,7 +149,8 @@
 </script>
 </head>
 <body>
-    <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    <div id="container" style="width: 49%; height: 380px; float:left;"></div>
+    <div id="responseTime" style="width: 49%; height: 380px; float:right;"></div>
     <div id="container2" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
 </body>
