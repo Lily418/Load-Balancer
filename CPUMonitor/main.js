@@ -22,6 +22,7 @@ function sendCPUUsage(usage){
 process.on( 'SIGINT', function() {
     socket.emit('shutdown', "");
     socket.on('shutdown-complete', function(){
+        console.log('Shutting down now')
         socket.disconnect();
         process.exit();
     });

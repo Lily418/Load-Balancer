@@ -122,6 +122,7 @@ io.on('connection', function(socket){
 
 
     socket.on('shutdown', function(){
+        console.log('Shutdown Request Received');
         removeFromServerList(ip);
         socket.emit('shutdown-complete', "");
     });
