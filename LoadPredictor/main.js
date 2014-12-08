@@ -32,7 +32,7 @@ var cpuUsages = []
 var time = 0;
 var recordingInterval = 1000 * 10;
 var endtime = 7440000;
-var training = true;
+var training = false;
 var recording = false;
 var ended = false;
 var keyPrefix = training ? "training:" : "testing:";
@@ -76,6 +76,7 @@ function startRecordingUsage() {
 
             client.set(keyPrefix + time, average, redis.print);
             client.set(keyPrefix + "requests:" + time, requests);
+            scale.scale(client, time + (1000 * 10), io);
 
             for (var server in serverResponses) {
                 if (serverResponses.hasOwnProperty(server)) {
