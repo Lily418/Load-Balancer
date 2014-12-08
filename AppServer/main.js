@@ -1,5 +1,24 @@
 var app = require('express')();
 var http = require('http').Server(app);
+var io = require('socket.io-client')('http://192.168.56.114:3000');
+var getCpuUsage = require("./top.js");
+
+var socket = io.connect('http://192.168.56.114:3000');
+
+socket.on('connect', function () {
+    console.log('connected')
+    getCpuUsage(sendCPUUsage);
+});
+
+socket.on('connect_failed', function(){
+    console.log('Connection Failed');
+});
+
+
+function sendCPUUsage(usage){
+    console.log('emit' + usage)
+    socket.emit('cpu-usage', usage);
+};
 
 var server = http.listen(3005, function(){
   console.log('listening on *:3005');
@@ -19,7 +38,11 @@ app.get('/', function(req, res){
 });
 
 process.on( 'SIGINT', function() {
-    console.log('TROLL')
-    server.close();
-    process.exit();
+    socket.emit('shutdown', "");
+    socket.on('shutdown-complete', function(){
+        console.log('Shutting down now')
+        socket.disconnect();
+        server.close();
+        process.exit();
+    });
 });
