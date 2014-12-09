@@ -53,6 +53,7 @@ module.exports = {
     scale: function(redisClient, timeInterval, io){
         predictOptimal(redisClient, timeInterval, function(prediction){
             io.emit('scale-request', prediction);
+            io.emit('optimal-servers', JSON.stringify({"series": "Prediction", "timeInterval": timeInterval, "optimalServers": prediction}));
         });
     }
 }
