@@ -51,6 +51,7 @@ var serverResponses = {};
 
 function startRecordingUsage() {
     scale.emitTrainingData(client, io);
+    scale.scale(client, 1000 * 10, io);
     var recordUsage = setInterval(function(){
         if(!ended){
             var count = cpuUsages.length;
