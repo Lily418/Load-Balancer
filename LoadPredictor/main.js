@@ -24,7 +24,10 @@ http.listen(3000, function(){
 //Returns the IP of the next server in the round-robin
 function nextServer(){
     var ip = serverQueue.shift();
-    serverQueue.push(ip);
+    if(ip !== undefined){
+        serverQueue.push(ip);
+    }
+    
     return ip;
 }
 
