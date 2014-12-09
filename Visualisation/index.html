@@ -10,38 +10,44 @@
     <script>
     $(function(){
 
-        var socket = io.connect("http://192.168.56.114:3000");
+        var socket = io.connect("http://192.168.56.104:3000");
+        var connectedToLoadSim = false;
 
 
+        createChart('#container', 'CPU_Usage', 'datetime', 100, "Time", "Usage %");
+        createChart('#container2', 'Optimal_Servers', 'linear', 10, "Time Slice", "No. Of Servers");
+        createChart('#responseTime', 'Response_Time', 'datetime', 3, "Time", "Seconds");
 
-
-        createChart('#container', 'CPU_Usage', 'datetime', 100);
-        createChart('#container2', 'Optimal_Servers', 'linear', 10);
-        createChart('#responseTime', 'Response_Time', 'datetime', 5);
-
-        var exampleSocket = new WebSocket("ws://127.0.0.1:9000/ws");
-        exampleSocket.onopen = function (event) {
-            exampleSocket.send("Here's some text that the server is urgently awaiting!");
-        }
-
-        exampleSocket.onmessage = function (event) {
-            if(Response_Time === undefined){
-                return;
+        function connectToLoadSim(){
+            connectedToLoadSim = true;
+            var webSocket = new WebSocket("ws://127.0.0.1:9000/ws");
+            webSocket.onopen = function (event) {
+                webSocket.send("Socket Open")
             }
 
-            if(Response_Time.get("ResponseTime") == null) {
-                Response_Time.addSeries({
-                    name: "Response Time",
-                    id: "ResponseTime",
-                    data: []
-                });
+            webSocket.onmessage = function (event) {
+                if(Response_Time === undefined){
+                    return;
+                }
+
+                if(Response_Time.get("ResponseTime") == null) {
+                    Response_Time.addSeries({
+                        name: "Response Time",
+                        id: "ResponseTime",
+                        data: []
+                    });
+                }
+
+
+                Response_Time.get("ResponseTime").addPoint([new Date().getTime(), Number(event.data)], true, false, true);
             }
 
-
-            Response_Time.get("ResponseTime").addPoint([new Date().getTime(), Number(event.data)], true, false, true);
+            webSocket.onclose = function(event){
+                connectedToLoadSim = false;
+            }
         }
 
-        function createChart(id, title, xAxisType, max){
+        function createChart(id, title, xAxisType, max, xAxisLabel, yAxisLabel){
             $(id).highcharts({
                 chart: {
                     type: 'spline',
@@ -58,7 +64,7 @@
 
                 yAxis: {
                     title: {
-                        text: 'Usage %'
+                        text: yAxisLabel
                     },
                     plotLines: [{
                         value: 0,
@@ -71,7 +77,7 @@
                 },
                 xAxis: {
                     title: {
-                        text: 'Time'
+                        text: xAxisLabel
                     },
                     type: xAxisType,
                     tickPixelInterval: 100,
@@ -121,6 +127,11 @@
         });
 
         socket.on('optimal-servers', function(msg){
+
+            if(!connectedToLoadSim){
+                connectToLoadSim();
+            }
+
             msg = JSON.parse(msg);
             if(Optimal_Servers === undefined){
                 return;
