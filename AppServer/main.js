@@ -1,6 +1,6 @@
 var app = require('express')();
 var http = require('http').Server(app);
-var io = require('socket.io-client')('http://192.168.56.104:3000');
+var io = require('socket.io-client')('http://192.168.56.101:3000');
 var getCpuUsage = require("./top.js");
 
 var socket = io.connect();
