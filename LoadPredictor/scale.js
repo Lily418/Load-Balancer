@@ -45,7 +45,14 @@ function createEmitMLData(io){
         return function(timeInterval, optimalServers){
             data.push([t_label, optimalServers]);
             if(data.length == 3){
-                console.log(data);
+                data.sort(function(v){
+                    return v[0];
+                });
+
+                data = data.map(function(v){
+                    return v[1];
+                });
+                
                 io.emit('ml-data', JSON.stringify(data));
             }
         }
@@ -61,9 +68,9 @@ module.exports = {
 
     emitTestData: function(redisClient, timeInterval, io){
         var add_ml_scalar = createEmitMLData(io);
-        calculateOptimalServers(redisClient, timeInterval, "testing", add_ml_scalar('t'));
-        calculateOptimalServers(redisClient, timeInterval - 10000, "testing", add_ml_scalar('t-1'));
-        calculateOptimalServers(redisClient, timeInterval, "training", add_ml_scalar('t-1year'));
+        calculateOptimalServers(redisClient, timeInterval, "testing", add_ml_scalar(2));
+        calculateOptimalServers(redisClient, timeInterval - 10000, "testing", add_ml_scalar(1));
+        calculateOptimalServers(redisClient, timeInterval, "training", add_ml_scalar(0));
         calculateOptimalServers(redisClient, timeInterval, "testing", createEmitOptimal(io, "Test_Recording"));
     },
 
