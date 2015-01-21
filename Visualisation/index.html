@@ -6,7 +6,7 @@
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="https://dl.dropboxusercontent.com/u/36831702/js/highcharts.js"></script>
     <script src="https://dl.dropboxusercontent.com/u/36831702/js/modules/exporting.js"></script>
-    <script src="https://dl.dropboxusercontent.com/u/36831702/js/highcharts-3d.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/36831702/js/hc.js"></script>
     <script src="https://dl.dropboxusercontent.com/u/36831702/js/highchart-helper.js"></script>
 
     <script>
@@ -151,12 +151,48 @@
                 series = Optimal_Servers.get(msg.series);
             }
 
-            console.log(msg);
+            //console.log(msg);
 
             series.addPoint(msg.optimalServers);
             Optimal_Servers.xAxis[0].setExtremes(0, 100);
         });
 
+        function addMlData(chart){
+            socket.on('ml-data', function(msg){
+                console.log(msg)
+                chart.get('opt-servers').addPoint(JSON.parse(msg));
+            });
+        }
+
+        function render(chart){
+            console.log('Trying to render');
+            chart.renderer.cuboid( {
+                "x":100,
+                "y":100,
+                "z":251,
+                "width":600,
+                "height":601,
+                "depth":1,
+                "alpha":10,
+                "beta":30,
+                "origin":{"x":400,"y":400,"z":250,"vd":5}
+                })
+            .attr({
+                fill: 'rgba(255,0,0,255)' ,
+                zIndex: 3
+            })
+            .add();
+        }
+
+        function defaultData(empty){
+
+            if(empty){
+                return []
+            }
+            else {
+                return [[3,2,2],[3,2,2],[4,2,2],[4,2,2],[3,2,2],[3,2,2],[3,2,2],[3,2,2],[3,2,2],[3,2,2],[3,2,1],[3,1,2],[3,2,2],[3,2,2],[3,2,1],[3,1,1],[3,1,1],[3,1,1],[3,1,1],[3,1,1],[2,1,1],[2,1,1],[2,1,1],[2,1,1],[2,1,1],[2,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[2,1,1],[2,1,1],[2,1,1],[2,1,1],[2,1,1],[2,1,1],[2,1,1],[2,1,1],[2,1,2],[2,2,2],[2,2,2],[3,2,2],[3,2,2],[3,2,2],[4,2,3],[4,3,3],[4,3,3],[5,3,3],[4,3,3],[5,3,3],[5,3,3],[5,3,3],[5,3,3],[5,3,3],[5,3,3],[5,3,3],[6,3,3],[6,3,3],[6,3,3],[6,3,3],[6,3,3],[6,3,3],[6,3,3],[6,3,3],[6,3,3],[6,3,3],[6,3,3],[6,3,3],[6,3,3],[6,3,3],[6,3,3],[5,3,3],[5,3,3],[5,3,3],[5,3,3],[5,3,3],[5,3,3],[5,3,3],[5,3,3],[5,3,3],[5,3,3],[5,3,3],[5,3,3],[4,3,2],[4,2,2],[4,2,2],[4,2,2],[4,2,2],[4,2,2],[3,2,1],[3,1,1],[4,1,1],[3,1,1],[3,1,2],[3,2,1],[3,1,1],[3,1,1],[3,1,1]];
+            }
+        }
 
         Highcharts.getOptions().colors = $.map(Highcharts.getOptions().colors, function (color) {
             return {
@@ -193,7 +229,9 @@
                 events: {
                     load: function () {
                         var c = this;
-                        setRotation(this, function(showLabels){
+                        addMlData(this);
+                        render(this);
+                        /*setRotation(this, function(showLabels){
                             c.yAxis[0].axisTitle.attr({
                                 text: ''
                             });
@@ -212,7 +250,7 @@
                                 });
                             }
 
-                        });
+                        });*/
                     }
                 }
             },
@@ -255,15 +293,16 @@
             },
 
             series: [{
+                id: 'opt-servers',
                 name: '(T-1 Year, T-1 Hour, T)',
                 colorByPoint: true,
-                data: [[1,5,10]]
+                data: defaultData(false)
             }]
         });
 
     });
 
-</script>
+    </script>
 </head>
 <body>
     <div id="container" style="width: 49%; height: 380px; float:left;"></div>
