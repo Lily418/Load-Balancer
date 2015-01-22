@@ -11,7 +11,7 @@ from ws4py.websocket import WebSocket
 from ws4py.messaging import TextMessage
 
 
-training_mode = True
+training_mode = False
 redis = redis.StrictRedis()
 training = []
 testing  = []
@@ -45,7 +45,7 @@ min_views = min(training + testing, key=lambda time_views: time_views[1])[1]
 
 
 def make_request():
-    urllib.request.urlopen('http://192.168.56.114:3000').read()
+    print(urllib.request.urlopen('http://192.168.56.101:3000').read())
 
 
 def time_requests(web_socket):
@@ -58,10 +58,11 @@ def time_requests(web_socket):
 
 class EmptyClient(WebSocket):
     def opened(self):
-        threading.Thread(target=time_requests, args=(self,)).start()
-        #cherrypy.engine.publish('response-time', TextMessage("PORK N BEANS"))
-        #self.send("PORK N BEANS")
         pass
+    def received_message(self, m):
+        print(m.data)
+        threading.Thread(target=time_requests, args=(self,)).start()
+
 
 
 
