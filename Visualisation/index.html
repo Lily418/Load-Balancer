@@ -164,22 +164,36 @@
             });
         }
 
-        function render(chart){
-            console.log('Trying to render');
-            chart.renderer.cuboid( {
+        function planeEquationToDrawingPosition(w2, w1, w0){
+
+        }
+
+
+        var plane = null;
+        var planeA = 10;
+        var planeB = 30;
+        var bias = 0;
+        var alphaSlope = 10;
+        function render(chart, a, b){
+            //console.log('Trying to render');
+            if(plane != null){
+                console.log(a + " " + b);
+                plane.destroy();
+            }
+
+            plane = chart.renderer.cuboid( {
                 "x":100,
-                "y":100,
-                "z":251,
+                "y":700 - (bias * 60),
+                "z":0,
                 "width":600,
-                "height":601,
-                "depth":1,
-                "alpha":10,
-                "beta":30,
-                "origin":{"x":400,"y":400,"z":250,"vd":5}
-                })
+                "height":1,
+                "depth":250,
+                "alpha":a + 0,
+                "beta":b + 0,
+                "origin":{"x":400,"y":400,"z":250,"vd":5}})
             .attr({
-                fill: 'rgba(255,0,0,255)' ,
-                zIndex: 3
+                fill: 'rgba(255,0,0,100)' ,
+                zIndex: 0
             })
             .add();
         }
@@ -214,7 +228,7 @@
                 margin: 100,
                 options3d: {
                     enabled: true,
-                    alpha: 10,
+                    alpha: 25,
                     beta: 30,
                     depth: 250,
                     viewDistance: 5,
@@ -230,8 +244,12 @@
                     load: function () {
                         var c = this;
                         addMlData(this);
-                        render(this);
-                        /*setRotation(this, function(showLabels){
+                        //c.options.chart.options3d.alpha = 0;
+                        //c.options.chart.options3d.beta = 0;
+                        //chart.redraw(false);
+
+                        render(this, c.options.chart.options3d.alpha, c.options.chart.options3d.beta);
+                        setRotation(this, function(showLabels){
                             c.yAxis[0].axisTitle.attr({
                                 text: ''
                             });
@@ -250,7 +268,9 @@
                                 });
                             }
 
-                        });*/
+                        }, function(alpha, beta){
+                            render(c, alpha, beta);
+                        });
                     }
                 }
             },
