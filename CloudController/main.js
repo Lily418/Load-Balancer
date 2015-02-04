@@ -7,7 +7,8 @@ cloud.scale(1);
 var socket = io.connect();
 
 socket.on('connect', function () {
-    console.log('connected')
+    io.emit('scale-instructions-req', "New Client Connected");
+    console.log('connected');
 });
 
 socket.on('scale-request', function (msg) {

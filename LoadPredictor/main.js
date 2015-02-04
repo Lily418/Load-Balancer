@@ -52,8 +52,6 @@ client.keys(keyPrefix + "*", function(err, keys){
 var requests = 0;
 var serverResponses = {};
 
-scale.scale(client, 1000 * 10, io);
-
 function startRecordingUsage() {
     scale.emitTrainingData(client, io);
     var recordUsage = setInterval(function(){
@@ -85,8 +83,8 @@ function startRecordingUsage() {
             });
 
             setTimeout(function() {
-                scale.scale(client, 1000 * 10, io);
-            }, recordingInterval - (1000) * 3);
+                scale.scale(client, time + 1000 * 10, io);
+            }, recordingInterval - (1000 * 3));
 
             for (var server in serverResponses) {
                 if (serverResponses.hasOwnProperty(server)) {
@@ -125,6 +123,10 @@ io.on('connection', function(socket){
         if(recording){
             cpuUsages.push(msg);
         }
+    });
+
+    socket.on('scale-instructions-req', function(msg){
+        scale.scale(client, time + 1000 * 10, io);
     });
 
 
