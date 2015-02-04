@@ -34,7 +34,7 @@ function predictOptimal(redisClient, timeInterval, callback){
                 callback(tMinusOneYear);
             }
             else {
-            callback(lr.predict(tMinusOneYear,tMinusOneHour));
+            callback(Math.ceil(lr.predict(tMinusOneYear,tMinusOneHour)));
             }
         });
     });

@@ -31,7 +31,7 @@ module.exports = {
     },
 
     predict : function(tMinusOneYear, tMinusOneHour){
-        return Math.ceil((w1 * tMinusOneYear) + (w2 * tMinusOneHour) + w0);
+        return (w1 * tMinusOneYear) + (w2 * tMinusOneHour) + w0;
     }
 
 }
