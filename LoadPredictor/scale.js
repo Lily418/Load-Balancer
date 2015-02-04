@@ -67,12 +67,13 @@ module.exports = {
     },
 
     emitTestData: function(redisClient, timeInterval, io){
-        if(timeInterval == 10000){
+        if(timeInterval != 10000){
         var add_ml_scalar = createEmitMLData(io);
         calculateOptimalServers(redisClient, timeInterval, "testing", add_ml_scalar(2));
         calculateOptimalServers(redisClient, timeInterval - 10000, "testing", add_ml_scalar(1));
         calculateOptimalServers(redisClient, timeInterval, "training", add_ml_scalar(0));
         }
+
         calculateOptimalServers(redisClient, timeInterval, "testing", createEmitOptimal(io, "Test_Recording"));
     },
 
