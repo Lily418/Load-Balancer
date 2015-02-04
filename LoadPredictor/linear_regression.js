@@ -8,7 +8,7 @@ module.exports = {
     reportWeights : function(io){
         setInterval(function(){
             io.emit('weights', JSON.stringify({"w0": w0, "w1": w1, "w2": w2}));
-        } 100);
+        }, 100);
     }
 
     addData : function(d){
