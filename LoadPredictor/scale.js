@@ -68,8 +68,8 @@ module.exports = {
             calculateOptimalServers(redisClient, i, "training", createEmitOptimal(io, "Training_Data"));
         }
 
-        lr.reportWeights(io);
-        lr.weightUpdate();
+        //lr.reportWeights(io);
+        lr.weightUpdate(io);
     },
 
     emitTestData: function(redisClient, timeInterval, io){

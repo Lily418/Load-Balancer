@@ -165,7 +165,7 @@
 
         function addMlData(chart){
             socket.on('ml-data', function(msg){
-                console.log(msg)
+                //console.log(msg)
                 chart.get('opt-servers').addPoint(JSON.parse(msg));
             });
         }
@@ -265,13 +265,6 @@
                 plane.destroy();
             }
 
-            /*[{"x":100,"y":580,"z":0},
-                        {"x":700,"y":580,"z":0},
-                        {"x":700,"y":581,"z":0},
-                        {"x":100,"y":581,"z":0},
-                    {"x":100,"y":581,"z":150},
-                    {"x":700,"y":581,"z":250},{"x":700,"y":580,"z":250},{"x":100,"y":580,"z":250}]*/
-
             plane = c.renderer.cuboid( {
                 "points" : sortPoints(createPlane()),
                 "alpha":alpha,
@@ -287,6 +280,7 @@
 
         socket.on('weights', function(msg){
             var weights = JSON.parse(msg);
+            console.log(weights);
             w0 = weights.w0;
             w1 = weights.w1;
             w2 = weights.w2;
