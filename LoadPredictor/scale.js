@@ -1,11 +1,4 @@
-/*var io = require('socket.io-client');
-
-console.log('connecting')
-var socket = io.connect('http://192.168.56.101:3000');
-
-socket.on('cpu-ip', function(msg){
-console.log(msg)
-});*/
+var lr = require('./linear_regression.js');
 
 var requestsHandledPerInterval = 10
 var list = []
@@ -34,8 +27,15 @@ function createEmitOptimal(io, series){
 }
 
 function predictOptimal(redisClient, timeInterval, callback){
-    calculateOptimalServers(redisClient, timeInterval, "training", function(timeInterval, optimalServers){
-        callback(optimalServers);
+    calculateOptimalServers(redisClient, timeInterval, "training", function(tiMinusOneYear, tMinusOneYear){
+        calculateOptimalServers(redisClient, timeInterval - 10000, "testing", function(tiMinusOneHour, tMinusOneHour){
+            if(tiMinusOneHour < 0){
+                callback(tMinusOneYear);
+            }
+            else {
+            callback(lr.predict(tMinusOneYear,tMinusOneHour));
+            }
+        });
     });
 }
 
@@ -53,6 +53,7 @@ function createEmitMLData(io){
                     return v[1];
                 });
 
+                lr.addData(data);
                 io.emit('ml-data', JSON.stringify(data));
             }
         }
