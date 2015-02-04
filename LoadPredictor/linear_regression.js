@@ -15,7 +15,7 @@ module.exports = {
     weightUpdate : function() {
         setInterval(function(){
             data.forEach(function(d){
-                var z = predict(d[0], d[1]);
+                var z = this.predict(d[0], d[1]);
                 w1 += alpha * (d[2] - z) * d[0];
                 w2 += alpha * (d[2] - z) * d[1];
                 w0 += alpha * (d[2] - z);
