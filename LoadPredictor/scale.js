@@ -66,6 +66,8 @@ module.exports = {
         for(var i = 10000; i <= 1000000; i += 10000){
             calculateOptimalServers(redisClient, i, "training", createEmitOptimal(io, "Training_Data"));
         }
+
+        lr.reportWeights(io);
     },
 
     emitTestData: function(redisClient, timeInterval, io){

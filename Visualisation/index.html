@@ -157,6 +157,16 @@
             Optimal_Servers.xAxis[0].setExtremes(0, 100);
         });
 
+        var w0 = 2;
+        var w1 = 0.25;
+        var w2 = 0.5;
+        socket.on('weights', function(msg)){
+            var weights = JSON.parse(msg);
+            w0 = weights.w0;
+            w1 = weights.w1;
+            w2 = weights.w2;
+        }
+
         function addMlData(chart){
             socket.on('ml-data', function(msg){
                 console.log(msg)
@@ -165,9 +175,6 @@
         }
 
         function getZ(x, y){
-            var w0 = 2;
-            var w1 = 0.25;
-            var w2 = 0.5;
             return (w1 * x) + (w2 * y) + w0;
         }
 
@@ -398,7 +405,7 @@
                 id: 'opt-servers',
                 name: '(T-1 Year, T-1 Hour, T)',
                 colorByPoint: true,
-                data: defaultData(false)
+                data: defaultData(true)
             }]
         });
 
