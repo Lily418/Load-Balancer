@@ -54,6 +54,7 @@ function createEmitMLData(io){
                     return v[1];
                 });
 
+
                 lr.addData(data);
                 io.emit('ml-data', JSON.stringify(data));
             }
@@ -68,6 +69,7 @@ module.exports = {
         }
 
         lr.reportWeights(io);
+        lr.weightUpdate();
     },
 
     emitTestData: function(redisClient, timeInterval, io){
