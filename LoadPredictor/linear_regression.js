@@ -4,11 +4,11 @@ var w1 = 0;
 var w2 = 0;
 
 module.exports = {
-    function addData(d){
+    addData : function(d){
         data.push(d);
     }
 
-    function predict(tMinusOneYear, tMinusOneHour){
+    predict : function(tMinusOneYear, tMinusOneHour){
         return Math.ceil((w1 * tMinusOneYear) + (w2 * tMinusOneHour) + w0);
     }
 
