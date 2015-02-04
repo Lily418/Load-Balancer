@@ -30,9 +30,7 @@ function predictOptimal(redisClient, timeInterval, callback){
     calculateOptimalServers(redisClient, timeInterval, "training", function(tiMinusOneYear, tMinusOneYear){
         calculateOptimalServers(redisClient, timeInterval - 10000, "testing", function(tiMinusOneHour, tMinusOneHour){
 
-            console.log("ti - 10000" + (timeInterval - 10000));
-
-            if(timeInterval - 10000 < 0){
+            if(tiMinusOneHour == 0){
                 callback(tMinusOneYear);
             }
             else {
