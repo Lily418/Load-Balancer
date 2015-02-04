@@ -21,7 +21,7 @@ module.exports = {
                 w0 += alpha * (d[2] - z);
             });
         }, 2);
-    }
+    },
 
     addData : function(d){
         data.push(d);
