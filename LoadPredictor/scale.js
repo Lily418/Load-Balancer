@@ -27,14 +27,14 @@ function createEmitOptimal(io, series){
 }
 
 function predictOptimal(redisClient, timeInterval, callback){
-    calculateOptimalServers(redisClient, timeInterval, "training", function(tiMinusOneYear, tMinusOneYear){
-        calculateOptimalServers(redisClient, timeInterval - 10000, "testing", function(tiMinusOneHour, tMinusOneHour){
+    calculateOptimalServers(redisClient, timeInterval, "training", function(intervalMinusOneYear, tMinusOneYear){
+        calculateOptimalServers(redisClient, timeInterval - 10000, "testing", function(intervalMinusOneHour, tMinusOneHour){
 
-            if(tiMinusOneHour == 0){
+            if(intervalMinusOneHour == 0){
                 callback(tMinusOneYear);
             }
             else {
-            callback(Math.ceil(lr.predict(tMinusOneYear,tMinusOneHour)));
+                callback(Math.ceil(lr.predict(tMinusOneYear,tMinusOneHour)));
             }
         });
     });

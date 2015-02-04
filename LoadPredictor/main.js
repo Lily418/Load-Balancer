@@ -27,7 +27,7 @@ function nextServer(){
     if(ip !== undefined){
         serverQueue.push(ip);
     }
-    
+
     return ip;
 }
 
@@ -79,16 +79,16 @@ function startRecordingUsage() {
 
 
             client.set(keyPrefix + time, average, redis.print);
-            client.set(keyPrefix + "requests:" + time, requests);
-            scale.scale(client, time + (1000 * 10), io);
+            client.set(keyPrefix + "requests:" + time, requests, function(){
+                scale.scale(client, time + (1000 * 10), io);
+                scale.emitTestData(client, time, io);
+            });
 
             for (var server in serverResponses) {
                 if (serverResponses.hasOwnProperty(server)) {
                     client.set(keyPrefix + "responses:" + server + ":" + time, serverResponses[server])
                 }
             }
-
-            scale.emitTestData(client, time, io);
 
             requests = 0;
             serverResponses = {};
