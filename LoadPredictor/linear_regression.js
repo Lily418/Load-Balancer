@@ -23,7 +23,7 @@ module.exports = {
                 w0 += alpha * (d[2] - z);
             });
             reportWeights(io);
-        }, 500);
+        }, 50);
     },
 
     addData : function(d){
