@@ -52,7 +52,7 @@ function createEmitMLData(io){
                 data = data.map(function(v){
                     return v[1];
                 });
-                
+
                 io.emit('ml-data', JSON.stringify(data));
             }
         }
@@ -67,6 +67,7 @@ module.exports = {
     },
 
     emitTestData: function(redisClient, timeInterval, io){
+        console.log(timeInterval);
         var add_ml_scalar = createEmitMLData(io);
         calculateOptimalServers(redisClient, timeInterval, "testing", add_ml_scalar(2));
         calculateOptimalServers(redisClient, timeInterval - 10000, "testing", add_ml_scalar(1));
