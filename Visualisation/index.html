@@ -160,12 +160,8 @@
         var w0 = 2;
         var w1 = 0.25;
         var w2 = 0.5;
-        socket.on('weights', function(msg)){
-            var weights = JSON.parse(msg);
-            w0 = weights.w0;
-            w1 = weights.w1;
-            w2 = weights.w2;
-        }
+
+
 
         function addMlData(chart){
             socket.on('ml-data', function(msg){
@@ -259,11 +255,13 @@
         }
 
 
+        var alpha = 0;
+        var beta  = 0;
+        var c = null;
 
-        function render(chart, a, b){
+        function render(){
             //console.log('Trying to render');
             if(plane != null){
-                console.log(a + " " + b);
                 plane.destroy();
             }
 
@@ -274,10 +272,10 @@
                     {"x":100,"y":581,"z":150},
                     {"x":700,"y":581,"z":250},{"x":700,"y":580,"z":250},{"x":100,"y":580,"z":250}]*/
 
-            plane = chart.renderer.cuboid( {
+            plane = c.renderer.cuboid( {
                 "points" : sortPoints(createPlane()),
-                "alpha":a,
-                "beta":b,
+                "alpha":alpha,
+                "beta":beta,
                 "origin":{"x":400,"y":400,"z":240,"vd":5}})
 
             .attr({
@@ -286,6 +284,14 @@
             })
             .add();
         }
+
+        socket.on('weights', function(msg){
+            var weights = JSON.parse(msg);
+            w0 = weights.w0;
+            w1 = weights.w1;
+            w2 = weights.w2;
+            render();
+        });
 
         function defaultData(empty){
 
@@ -331,7 +337,7 @@
 
                 events: {
                     load: function () {
-                        var c = this;
+                        c = this;
                         addMlData(this);
                         //c.options.chart.options3d.alpha = 0;
                         //c.options.chart.options3d.beta = 0;
@@ -357,8 +363,10 @@
                                 });
                             }
 
-                        }, function(alpha, beta){
-                            render(c, alpha, beta);
+                        }, function(a, b){
+                            alpha = a;
+                            beta  = b;
+                            render();
                         });
                     }
                 }
