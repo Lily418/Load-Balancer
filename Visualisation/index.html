@@ -6,7 +6,7 @@
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="https://dl.dropboxusercontent.com/u/36831702/js/highcharts.js"></script>
     <script src="https://dl.dropboxusercontent.com/u/36831702/js/modules/exporting.js"></script>
-    <script src="https://dl.dropboxusercontent.com/u/36831702/js/hc.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/36831702/js/highcharts-3d.src.js"></script>
     <script src="https://dl.dropboxusercontent.com/u/36831702/js/highchart-helper.js"></script>
 
     <script>
@@ -164,16 +164,95 @@
             });
         }
 
-        function planeEquationToDrawingPosition(w2, w1, w0){
+        function getZ(x, y){
+            var w0 = 2;
+            var w1 = 0.25;
+            var w2 = 0.5;
+            return (w1 * x) + (w2 * y) + w0;
+        }
+
+        function partition(ps, prop){
+            ps = ps.sort(function(p1, p2){
+                return p1[prop] - p2[prop]
+            });
+
+            var smallest = ps.slice(0,ps.length/2);
+            var largest  = ps.slice(ps.length/2, ps.length);
+            return {"smallest":smallest, "largest": largest }
 
         }
 
 
+        function sortPoints(ps){
+            var partZ = partition(ps, "z")
+            var firstFour = partZ.smallest;
+            var lastFour  = partZ.largest;
+
+
+
+            var partY1 = partition(firstFour, "y");
+            var firstTwo  = partY1.smallest;
+            var secondTwo = partY1.largest;
+
+            var partY2 = partition(lastFour, "y");
+            var thirdTwo  = partY2.largest;
+            var lastTwo   = partY2.smallest;
+
+            var partX1 = partition(firstTwo, "x");
+            var partX2 = partition(secondTwo, "x");
+            var partX3 = partition(thirdTwo, "x");
+            var partX4 = partition(lastTwo, "x");
+
+            var first   = partX1.smallest[0];
+            var second  = partX1.largest[0];
+            var third   = partX2.largest[0];
+            var fourth  = partX2.smallest[0];
+            var fifth   = partX3.smallest[0];
+            var sixth   = partX3.largest[0];
+            var seventh = partX4.largest[0];
+            var eighth  = partX4.smallest[0];
+
+            var ps = [first, second, third, fourth, fifth, sixth, seventh, eighth];
+            return ps;
+        }
+
         var plane = null;
-        var planeA = 10;
-        var planeB = 30;
-        var bias = 0;
-        var alphaSlope = 10;
+        var planeHeight = 4;
+        function createPlanePoints(p1,p2,p7,p8) {
+            return [p1,
+                    p2,
+                {"x": p2.x, "y": p2.y + planeHeight, "z": p2.z},
+                {"x": p1.x, "y": p1.y + planeHeight, "z": p1.z},
+                {"x": p8.x, "y": p8.y + planeHeight, "z": p8.z},
+                {"x": p7.x, "y": p7.y + planeHeight, "z": p7.z},
+                p7,
+                p8];
+        }
+
+        function createPlane(){
+            return createPlanePoints(scaleToView({"x": 0, "y": 10, "z": getZ(0,10)}),
+            scaleToView({"x": 10, "y": 10, "z": getZ(10,10)}),
+            scaleToView({"x": 10, "y": 0, "z": getZ(10,0)}),
+            scaleToView({"x": 0, "y": 0, "z": getZ(0,0)}));
+        }
+
+        function addPoint(p1, p2){
+            return {"x": p1.x + p2.x, "y": p1.y + p2.y, "z": p1.z + p2.z};
+        }
+
+        function scaleToView(p) {
+            var originDrawLocation = {"x": 100, "y": 700, "z":0};
+            var yAxisUnitLength = 60;
+            var xAxisUnitLength = 60;
+            var zAxisUnitLength = 27;
+            p.y = p.y * yAxisUnitLength * -1;
+            p.x = p.x * xAxisUnitLength;
+            p.z = p.z * zAxisUnitLength;
+            return addPoint(p, originDrawLocation);
+        }
+
+
+
         function render(chart, a, b){
             //console.log('Trying to render');
             if(plane != null){
@@ -181,19 +260,22 @@
                 plane.destroy();
             }
 
+            /*[{"x":100,"y":580,"z":0},
+                        {"x":700,"y":580,"z":0},
+                        {"x":700,"y":581,"z":0},
+                        {"x":100,"y":581,"z":0},
+                    {"x":100,"y":581,"z":150},
+                    {"x":700,"y":581,"z":250},{"x":700,"y":580,"z":250},{"x":100,"y":580,"z":250}]*/
+
             plane = chart.renderer.cuboid( {
-                "x":100,
-                "y":700 - (bias * 60),
-                "z":0,
-                "width":600,
-                "height":1,
-                "depth":250,
-                "alpha":a + 0,
-                "beta":b + 0,
-                "origin":{"x":400,"y":400,"z":250,"vd":5}})
+                "points" : sortPoints(createPlane()),
+                "alpha":a,
+                "beta":b,
+                "origin":{"x":400,"y":400,"z":240,"vd":5}})
+
             .attr({
-                fill: 'rgba(255,0,0,100)' ,
-                zIndex: 0
+                fill: 'rgba(0,0,255,0.2)' ,
+                zIndex: 5
             })
             .add();
         }
@@ -228,8 +310,8 @@
                 margin: 100,
                 options3d: {
                     enabled: true,
-                    alpha: 25,
-                    beta: 30,
+                    alpha: 0,
+                    beta: 0,
                     depth: 250,
                     viewDistance: 5,
 
