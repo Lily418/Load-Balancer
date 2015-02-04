@@ -1,5 +1,5 @@
 var data = []
-var w0 = 1;
+var w0 = 0;
 var w1 = 0;
 var w2 = 0;
 var alpha = 0.01;
