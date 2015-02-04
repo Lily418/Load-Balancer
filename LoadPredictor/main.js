@@ -52,9 +52,10 @@ client.keys(keyPrefix + "*", function(err, keys){
 var requests = 0;
 var serverResponses = {};
 
+scale.scale(client, 1000 * 10, io);
+
 function startRecordingUsage() {
     scale.emitTrainingData(client, io);
-    scale.scale(client, 1000 * 10, io);
     var recordUsage = setInterval(function(){
         if(!ended){
             var count = cpuUsages.length;
@@ -80,9 +81,12 @@ function startRecordingUsage() {
 
             client.set(keyPrefix + time, average, redis.print);
             client.set(keyPrefix + "requests:" + time, requests, function(){
-                scale.scale(client, time + (1000 * 10), io);
                 scale.emitTestData(client, time, io);
             });
+
+            setTimeout(function() {
+                scale.scale(client, 1000 * 10, io);
+            }, recordingInterval - (1000) * 3);
 
             for (var server in serverResponses) {
                 if (serverResponses.hasOwnProperty(server)) {
