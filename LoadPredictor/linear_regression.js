@@ -31,7 +31,11 @@ module.exports = {
     },
 
     predict : function(tMinusOneYear, tMinusOneHour){
+        if(data.length == 0){
+            return tMinusOneHour;
+        } else {
         return (w1 * tMinusOneYear) + (w2 * tMinusOneHour) + w0;
+        }
     }
 
 }
