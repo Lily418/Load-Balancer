@@ -133,6 +133,18 @@
             return (new Date(time + (interval * 120))).getTime();
         }
 
+        function getZIndex(series_name){
+            switch(series_name) {
+                case "Training_Data":
+                    return 0;
+                case "Test_Recording":
+                    return 1;
+                case "Prediction":
+                    return 2;
+                default: throw "Unexpected Series";
+            }
+        }
+
         socket.on('optimal-servers', function(msg){
 
             if(!connectedToLoadSim){
@@ -146,11 +158,14 @@
 
             var series = Optimal_Servers.get(msg.series);
 
+            console.log(msg.series);
+
             if(series == null) {
                 Optimal_Servers.addSeries({
                     name: msg.series,
                     id: msg.series,
-                    data: []
+                    data: [] ,
+                    zIndex: getZIndex(msg.series)
                 });
 
                 series = Optimal_Servers.get(msg.series);
