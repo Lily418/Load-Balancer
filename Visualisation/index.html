@@ -165,11 +165,15 @@
         var w2 = 0;
 
 
+        function addJitter(p){
+            var jitterAmount = 0.125;
+            return p.map(function(x) { return x + Math.random() * jitterAmount - jitterAmount / 2; });
+        }
 
         function addMlData(chart){
             socket.on('ml-data', function(msg){
                 //console.log(msg)
-                chart.get('opt-servers').addPoint(JSON.parse(msg));
+                chart.get('opt-servers').addPoint(addJitter(JSON.parse(msg)));
             });
         }
 
@@ -276,7 +280,7 @@
 
             .attr({
                 fill: 'rgba(0,0,255,0.2)' ,
-                zIndex: 5
+                zIndex: 2
             })
             .add();
         }
