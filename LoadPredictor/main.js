@@ -82,9 +82,11 @@ function startRecordingUsage() {
                 scale.emitTestData(client, time, io);
             });
 
-            setTimeout(function() {
-                scale.scale(client, time + 1000 * 10, io, average);
-            }, recordingInterval - (1000 * 3));
+            if(!training){
+                setTimeout(function() {
+                    scale.scale(client, time + 1000 * 10, io, average);
+                }, recordingInterval - (1000 * 3));
+            }
 
             for (var server in serverResponses) {
                 if (serverResponses.hasOwnProperty(server)) {
