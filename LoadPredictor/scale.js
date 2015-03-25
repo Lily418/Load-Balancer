@@ -51,6 +51,12 @@ function scaleBasedOnCurrentUsage(average, redisClient, timeInterval, callback){
     else if(average > 70){
         currentScaling += 1;
     }
+
+    if(currentScaling < 1){
+        currentScaling = 1;
+    } else if(currentScaling > 10){
+        currentScaling = 10;
+    }
     
     callback(Math.ceil(currentScaling));
 }
