@@ -83,7 +83,7 @@ function startRecordingUsage() {
             });
 
             setTimeout(function() {
-                scale.scale(client, time + 1000 * 10, io);
+                scale.scale(client, time + 1000 * 10, io, average);
             }, recordingInterval - (1000 * 3));
 
             for (var server in serverResponses) {

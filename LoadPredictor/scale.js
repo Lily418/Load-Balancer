@@ -3,6 +3,8 @@ var lr = require('./linear_regression.js');
 var requestsHandledPerInterval = 10
 var list = []
 
+var prediction = false;
+
 function calculateOptimalServers(redisClient, timeInterval, seriesTag, callback){
     redisClient.get(seriesTag + ":requests:" + timeInterval, function(err, value){
         list.push(Number(value));
@@ -26,7 +28,7 @@ function createEmitOptimal(io, series){
     }
 }
 
-function predictOptimal(redisClient, timeInterval, callback){
+function predictOptimal(average, redisClient, timeInterval, callback){
     calculateOptimalServers(redisClient, timeInterval, "training", function(intervalMinusOneYear, tMinusOneYear){
         calculateOptimalServers(redisClient, timeInterval - 10000, "testing", function(intervalMinusOneHour, tMinusOneHour){
 
@@ -38,6 +40,11 @@ function predictOptimal(redisClient, timeInterval, callback){
             }
         });
     });
+}
+
+
+function scaleBasedOnCurrentUsage(average, redisClient, timeInterval, callback){
+    callback(Math.ceil(3));
 }
 
 function createEmitMLData(io){
@@ -83,17 +90,15 @@ module.exports = {
         calculateOptimalServers(redisClient, timeInterval, "testing", createEmitOptimal(io, "Test_Recording"));
     },
 
-    scale: function(redisClient, timeInterval, io){
-        predictOptimal(redisClient, timeInterval, function(prediction){
+    scale: function(redisClient, timeInterval, io, average){
+        var predictFunc = predictOptimal;
+        if(!prediction){
+            predictFunc = scaleBasedOnCurrentUsage;
+        }
+
+        predictFunc(average, redisClient, timeInterval, function(prediction){
             io.emit('scale-request', prediction);
             io.emit('optimal-servers', JSON.stringify({"series": "Prediction", "timeInterval": timeInterval, "optimalServers": prediction}));
         });
     }
 }
-
-/*var prevInterval = timeInterval - (10 * 1000);
-//Calculate true optimal for previous timeframe
-redisClient.get("testing:requests:" + prevInterval, function(err,value){
-var optimalServers = Math.ceil(value / requestsHandledPerInterval);
-io.emit('optimal-servers', JSON.stringify({"timeInterval": timeInterval, "optimalServers": optimalServers}))
-});*/
