@@ -45,10 +45,10 @@ function predictOptimal(average, redisClient, timeInterval, callback){
 var currentScaling = 3;
 function scaleBasedOnCurrentUsage(average, redisClient, timeInterval, callback){
     console.log(average);
-    if(average < 50){
+    if(average < 30){
         currentScaling -= 1;
     }
-    else if(average > 70){
+    else if(average > 80){
         currentScaling += 1;
     }
 
@@ -57,7 +57,7 @@ function scaleBasedOnCurrentUsage(average, redisClient, timeInterval, callback){
     } else if(currentScaling > 10){
         currentScaling = 10;
     }
-    
+
     callback(Math.ceil(currentScaling));
 }
 
