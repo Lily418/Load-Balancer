@@ -42,9 +42,17 @@ function predictOptimal(average, redisClient, timeInterval, callback){
     });
 }
 
-
+var currentScaling = 3;
 function scaleBasedOnCurrentUsage(average, redisClient, timeInterval, callback){
-    callback(Math.ceil(3));
+    console.log(average);
+    if(average < 50){
+        currentScaling -= 1;
+    }
+    else if(average > 70){
+        currentScaling += 1;
+    }
+    
+    callback(Math.ceil(currentScaling));
 }
 
 function createEmitMLData(io){
