@@ -11,7 +11,7 @@ from ws4py.websocket import WebSocket
 from ws4py.messaging import TextMessage
 
 
-training_mode = False
+training_mode = True
 redis = redis.StrictRedis()
 training = []
 testing  = []
@@ -30,8 +30,8 @@ for key in redis.keys("wikiviews:*"):
 training.sort(key=lambda time_views: time_views[0])
 testing.sort(key=lambda time_views: time_views[0])
 
-training = training[0:34]
-testing  = testing[0:34]
+#training = training[0:34]
+#testing  = testing[0:34]
 
 if training_mode:
     simulation_profile = training
