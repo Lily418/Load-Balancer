@@ -11,7 +11,7 @@ from ws4py.websocket import WebSocket
 from ws4py.messaging import TextMessage
 
 
-training_mode = True
+training_mode = False
 redis = redis.StrictRedis()
 training = []
 testing  = []
