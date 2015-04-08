@@ -35,7 +35,7 @@ var cpuUsages = []
 var time = 0;
 var recordingInterval = 1000 * 10;
 var endtime = 7440000;
-var training = true;
+var training = false;
 var recording = false;
 var ended = false;
 var keyPrefix = training ? "training:" : "testing:";
@@ -151,12 +151,12 @@ app.get('/', function(req, res){
         startRecordingUsage();
     }
 
+    //Count the amount of requests received
     requests++;
 
     var server = nextServer();
     request("http://" + server + ":3005" , function(error, response, body) {
-        res.write("You were served by " + server + "\n")
-        res.end(body);
+        res.end(JSON.Stringify({"time": time, "response": response}));
 
         if(serverResponses[server] === undefined){
             serverResponses[server] = 1;
