@@ -156,7 +156,7 @@ app.get('/', function(req, res){
 
     var server = nextServer();
     request("http://" + server + ":3005" , function(error, response, body) {
-        res.end(JSON.Stringify({"time": time, "response": response}));
+        res.end(JSON.stringify({"time": time, "response": response}));
 
         if(serverResponses[server] === undefined){
             serverResponses[server] = 1;
