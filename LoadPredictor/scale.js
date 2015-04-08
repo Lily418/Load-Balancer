@@ -85,7 +85,7 @@ function createEmitMLData(io){
 
 module.exports = {
     emitTrainingData: function(redisClient, io){
-        for(var i = 10000; i <= 1000000; i += 10000){
+        for(var i = 10000; i <= 3000000; i += 10000){
             calculateOptimalServers(redisClient, i, "training", createEmitOptimal(io, "Training_Data"));
         }
 
