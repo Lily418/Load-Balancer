@@ -1,7 +1,7 @@
 Load-Balancer
 =============
 ## Abstract
-Cloud Service Providers like EC2 allows administrators to rent virtual machines running on their physical hardware, this provides an abstraction between physical hardware and computing resources. With this development rather than investing time and money into acquiring physical servers,systems administrators can access computing resources on demand.
+Cloud Service Providers like EC2 allows administrators to rent virtual machines running on their physical hardware, this provides an abstraction between physical hardware and computing resources. With this development rather than investing time and money into acquiring physical servers, systems administrators can access computing resources on demand.
 
 In a traditional static system the amount of servers required to process user's requests would need to be predicted days in advance to allow time to order and congure physical hardware. In contrast, Cloud Computing introduces the concept of auto-scaling, we can monitor a system in real time and request new resources as we require them with the goal of maximizing CPU utilization whilst minimizing response time, we want to deliver a fast service to users without wasting money on unused servers. This raises new issues however, setting up new servers running on virtual machines in the cloud (instances) still takes a few minutes, if the system's usage increases rapidly there will be a delay in provisioning more instances which will lead to a system slow down, but provisioning more instances than required would
 waste money.
